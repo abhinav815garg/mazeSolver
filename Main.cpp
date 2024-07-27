@@ -1,6 +1,5 @@
 #include <iostream>
 #include <queue>
-#include <limits>
 #include <set>
 #include <vector>
 #include <string>
@@ -50,9 +49,9 @@ std::vector<std::vector<int>> floodFill(int gridSize, const std::vector<std::pai
 
             if (dx == 0) {
                 if (dy == -1) {
-                    isAccessible = !horizontalWalls.count({ x, y });
-                } else {
                     isAccessible = !horizontalWalls.count({ nx, ny });
+                } else {
+                    isAccessible = !horizontalWalls.count({ x, y });
                 }
             } else {
                 if (dx == -1) {
@@ -93,8 +92,8 @@ int main(int argc, char* argv[]) {
     std::queue<std::pair<int, int>> toVisit;
     toVisit.push({ x, y });
 
-    std::set<std::pair<int, int>> verticalWalls = {};
-    std::set<std::pair<int, int>> horizontalWalls = {};
+    std::set<std::pair<int, int>> verticalWalls = {{6, 8}, {6, 7}};
+    std::set<std::pair<int, int>> horizontalWalls = {{7, 8}};
 
     std::vector<std::vector<int>> distances = floodFill(gridSize, centers, verticalWalls, horizontalWalls);
 
