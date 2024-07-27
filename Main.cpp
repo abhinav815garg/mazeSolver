@@ -218,6 +218,9 @@ int wallSet(int x, int y, int facing, std::set<std::pair<int, int>> &verticalWal
             {
                 verticalWalls.insert({x - 1, y});
             }
+            else {
+                API::setWall(x, y, 'w');
+            }
         }
     }
     if (facing == 1)
@@ -231,6 +234,9 @@ int wallSet(int x, int y, int facing, std::set<std::pair<int, int>> &verticalWal
             if (y > 0)
             {
                 horizontalWalls.insert({x, y - 1});
+            }
+            else {
+                API::setWall(x, y, 's');
             }
         }
         if (leftWall)
@@ -246,12 +252,18 @@ int wallSet(int x, int y, int facing, std::set<std::pair<int, int>> &verticalWal
             {
                 horizontalWalls.insert({x, y - 1});
             }
+            else {
+                API::setWall(x, y, 's');
+            }
         }
         if (rightWall)
         {
             if (x > 0)
             {
                 verticalWalls.insert({x - 1, y});
+            }
+            else {
+                API::setWall(x, y, 'w');
             }
         }
         if (leftWall)
@@ -267,6 +279,9 @@ int wallSet(int x, int y, int facing, std::set<std::pair<int, int>> &verticalWal
             {
                 verticalWalls.insert({x - 1, y});
             }
+            else {
+                API::setWall(x, y, 'w');
+            }
         }
         if (rightWall)
         {
@@ -277,6 +292,9 @@ int wallSet(int x, int y, int facing, std::set<std::pair<int, int>> &verticalWal
             if (y > 0)
             {
                 horizontalWalls.insert({x, y - 1});
+            }
+            else {
+                API::setWall(x, y, 's');
             }
         }
     }
@@ -384,6 +402,12 @@ int main(int argc, char *argv[])
         if ((x == cx1 || x == cx2) && (y == cy1 || y == cy2))
         {
             API::setColor(x, y, 'R');
+            for (const auto &cell : shortestPath)
+            {
+                int cx = cell.first;
+                int cy = cell.second;
+                API::setColor(cx, cy, 'Y');
+            }
             break;
         }
 
@@ -409,6 +433,8 @@ int main(int argc, char *argv[])
         //     log("horizontal " + std::to_string(wall.first) + " " + std::to_string(wall.second));
         // }
 
+        int minDiff = 999;
+
         for (const auto &direction : directions)
         {
             int dx = direction[0];
@@ -421,30 +447,50 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            if ((distances[ny][nx] < distances[y][x]) && (isCellAccessible(x, y, nx, ny, verticalWalls, horizontalWalls)))
+            if (((distances[y][x] - distances[ny][nx] < minDiff) && (distances[y][x] - distances[ny][nx] > 0)) && (isCellAccessible(x, y, nx, ny, verticalWalls, horizontalWalls)))
             {
                 // log(std::to_string(nx) + " " + std::to_string(ny) + "toVisit");
+                if (minDiff != 999){
+                    toVisit.pop_back();
+                }
                 toVisit.push_back({nx, ny});
+                minDiff = distances[y][x] - distances[ny][nx];
             }
         }
 
-        // for (const auto &cell : shortestPath)
-        // {
-        //     int cx = cell.first;
-        //     int cy = cell.second;
-        //     log("shortestPath " + std::to_string(cx) + " " + std::to_string(cy));
-        // }
+        for (const auto &cell : shortestPath)
+        {
+            int cx = cell.first;
+            int cy = cell.second;
+            log("shortestPath " + std::to_string(cx) + " " + std::to_string(cy));
+        }
 
-        // for (const auto &cell : toVisit)
-        // {
-        //     int cx = cell.first;
-        //     int cy = cell.second;
-        //     log("toVisit " + std::to_string(cx) + " " + std::to_string(cy));
-        // }
+        for (const auto &cell : toVisit)
+        {
+            int cx = cell.first;
+            int cy = cell.second;
+            log("toVisit " + std::to_string(cx) + " " + std::to_string(cy));
+        }
+
+        log(".........................");
 
         std::pair<int, int> next = toVisit.back();
         int nx = next.first;
         int ny = next.second;
+
+        for (const auto &cell: shortestPath)
+        {
+            if (cell == next)
+            {
+                while (shortestPath.back() != next)
+                {
+                    shortestPath.pop_back();
+                }
+                shortestPath.pop_back();
+                break;
+            }
+        }
+
         shortestPath.push_back(next);
         toVisit.pop_back();
 
@@ -454,7 +500,7 @@ int main(int argc, char *argv[])
 
         mouseControl(x, y, nx, ny, facing);
 
-        log(std::to_string(facing));
+        // log(std::to_string(facing));
 
         // log(std::to_string(facing) + " new");
     }
