@@ -14,6 +14,15 @@ void log(const std::string &text)
     std::cerr << text << std::endl;
 }
 
+int gridSize = 16;
+
+int cy1 = gridSize / 2;
+int cy2 = cy1 - 1;
+int cx1 = gridSize / 2;
+int cx2 = cx1 - 1;
+
+std::vector<std::pair<int, int>> centers = {{cx1, cy1}, {cx2, cy1}, {cx1, cy2}, {cx2, cy2}};
+
 std::vector<std::vector<int>> directions = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
 
 std::vector<std::vector<int>> floodFill(int gridSize, const std::vector<std::pair<int, int>> &centers, const std::set<std::pair<int, int>> &verticalWalls, const std::set<std::pair<int, int>> &horizontalWalls)
@@ -334,26 +343,72 @@ bool isCellAccessible(int x, int y, int nx, int ny, const std::set<std::pair<int
     }
 }
 
+void exploreCenters(int x, int y, int &facing, std::vector<std::vector<int>> &distances, std::set<std::pair<int, int>> &verticalWalls, std::set<std::pair<int, int>> &horizontalWalls)
+{
+    wallSet(x, y, facing, verticalWalls, horizontalWalls);
+
+    if (x == 7 && y == 7)
+    {
+        mouseControl(x, y, 7, 8, facing);
+        wallSet(7, 8, facing, verticalWalls, horizontalWalls);
+        mouseControl(7, 8, 8, 8, facing);
+        wallSet(8, 8, facing, verticalWalls, horizontalWalls);
+        mouseControl(8, 8, 8, 7, facing);
+        wallSet(8, 7, facing, verticalWalls, horizontalWalls);
+        mouseControl(8, 7, 7, 7, facing);
+    }
+    else if (x == 8 && y == 7) {
+        mouseControl(x, y, 8, 8, facing);
+        wallSet(8, 8, facing, verticalWalls, horizontalWalls);
+        mouseControl(8, 8, 7, 8, facing);
+        wallSet(7, 8, facing, verticalWalls, horizontalWalls);
+        mouseControl(7, 8, 7, 7, facing);
+        wallSet(7, 7, facing, verticalWalls, horizontalWalls);
+        mouseControl(7, 7, 8, 7, facing);
+    }
+    else if (x == 7 && y == 8) {
+        mouseControl(x, y, 8, 8, facing);
+        wallSet(8, 8, facing, verticalWalls, horizontalWalls);
+        mouseControl(8, 8, 8, 7, facing);
+        wallSet(8, 7, facing, verticalWalls, horizontalWalls);
+        mouseControl(8, 7, 7, 7, facing);
+        wallSet(7, 7, facing, verticalWalls, horizontalWalls);
+        mouseControl(7, 7, 7, 8, facing);
+    }
+    else {
+        mouseControl(x, y, 7, 7, facing);
+        wallSet(7, 7, facing, verticalWalls, horizontalWalls);
+        mouseControl(7, 7, 8, 7, facing);
+        wallSet(8, 7, facing, verticalWalls, horizontalWalls);
+        mouseControl(8, 7, 8, 8, facing);
+        wallSet(8, 8, facing, verticalWalls, horizontalWalls);
+        mouseControl(8, 8, 7, 8, facing);
+    }
+
+    distances = floodFill(gridSize, centers, verticalWalls, horizontalWalls);
+
+
+    for (int i = 0; i < gridSize; i++)
+    {
+        for (int j = 0; j < gridSize; j++)
+        {
+            API::setText(j, i, std::to_string(distances[i][j]));
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     log("Running...");
     API::setColor(0, 0, 'G');
     API::setText(0, 0, "START");
 
-    int gridSize = 16;
-
     int x = 0;
     int y = 0;
-
-    int cy1 = gridSize / 2;
-    int cy2 = cy1 - 1;
-    int cx1 = gridSize / 2;
-    int cx2 = cx1 - 1;
 
     int facing = 0;
     // 0: up, 1: right, 2: down, 3: left
 
-    std::vector<std::pair<int, int>> centers = {{cx1, cy1}, {cx2, cy1}, {cx1, cy2}, {cx2, cy2}};
 
     std::deque<std::pair<int, int>> toVisit;
 
@@ -380,12 +435,16 @@ int main(int argc, char *argv[])
         y = current.second;
 
         if ((x == cx1 || x == cx2) && (y == cy1 || y == cy2))
-        {
+        {   
+            exploreCenters(x, y, facing, distances, verticalWalls, horizontalWalls);
             API::setColor(x, y, 'R');
+            int i = shortestPath.size() - 1;
             for (const auto &cell : shortestPath)
             {
                 int cx = cell.first;
                 int cy = cell.second;
+                API::setText(cx, cy, std::to_string(i));
+                i--;
                 API::setColor(cx, cy, 'Y');
             }
             break;
