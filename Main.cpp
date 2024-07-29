@@ -376,13 +376,13 @@ void exploreCenters(int x, int y, int &facing, std::vector<std::vector<int>> &di
         mouseControl(7, 7, 7, 8, facing);
     }
     else {
-        mouseControl(x, y, 7, 7, facing);
-        wallSet(7, 7, facing, verticalWalls, horizontalWalls);
-        mouseControl(7, 7, 8, 7, facing);
+        mouseControl(x, y, 8, 7, facing);
         wallSet(8, 7, facing, verticalWalls, horizontalWalls);
-        mouseControl(8, 7, 8, 8, facing);
-        wallSet(8, 8, facing, verticalWalls, horizontalWalls);
-        mouseControl(8, 8, 7, 8, facing);
+        mouseControl(8, 7, 7, 7, facing);
+        wallSet(7, 7, facing, verticalWalls, horizontalWalls);
+        mouseControl(7, 7, 7, 8, facing);
+        wallSet(7, 8, facing, verticalWalls, horizontalWalls);
+        mouseControl(7, 8, 8, 8, facing);
     }
 
     distances = floodFill(gridSize, centers, verticalWalls, horizontalWalls);
