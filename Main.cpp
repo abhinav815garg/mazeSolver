@@ -45,8 +45,6 @@ std::vector<std::vector<int>> floodFill(int gridSize, const std::vector<std::pai
             int nx = x + dx;
             int ny = y + dy;
 
-            // log(std::to_string(nx) + " " + std::to_string(ny));
-
             if (nx < 0 || nx >= gridSize || ny < 0 || ny >= gridSize)
             {
                 continue;
@@ -138,9 +136,7 @@ void mouseControl(int currX, int currY, int nextX, int nextY, int &facing)
             API::turnRight();
             API::moveForward();
         }
-        // log(std::to_string(facing) + " before");
         facing = 1;
-        // log(std::to_string(facing) + " after");
     }
     else if (dx == 0 && dy == 1)
     {
@@ -197,10 +193,6 @@ int wallSet(int x, int y, int facing, std::set<std::pair<int, int>> &verticalWal
     bool frontWall = API::wallFront();
     bool rightWall = API::wallRight();
     bool leftWall = API::wallLeft();
-
-    // log("walls " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(facing) + " " + std::to_string(frontWall) + " " + std::to_string(rightWall) + " " + std::to_string(leftWall));
-
-    // log(std::to_string(x) + " " + std::to_string(y) + "wall");
 
     if (facing == 0)
     {
@@ -387,18 +379,6 @@ int main(int argc, char *argv[])
         x = current.first;
         y = current.second;
 
-        // log("current " + std::to_string(x) + " " + std::to_string(y));
-
-        // for (int i = 0; i < gridSize; i++)
-        // {
-        //     for (int j = 0; j < gridSize; j++)
-        //     {
-        //         log(std::to_string(distances[i][j]));
-        //     }
-        // }
-
-        // log(std::to_string(x) + " " + std::to_string(y) + "current");
-
         if ((x == cx1 || x == cx2) && (y == cy1 || y == cy2))
         {
             API::setColor(x, y, 'R');
@@ -423,16 +403,6 @@ int main(int argc, char *argv[])
             }
         }
 
-        // for (const auto &wall : verticalWalls)
-        // {
-        //     log("vertical " + std::to_string(wall.first) + " " + std::to_string(wall.second));
-        // }
-
-        // for (const auto &wall : horizontalWalls)
-        // {
-        //     log("horizontal " + std::to_string(wall.first) + " " + std::to_string(wall.second));
-        // }
-
         int minDiff = 999;
 
         for (const auto &direction : directions)
@@ -449,7 +419,6 @@ int main(int argc, char *argv[])
 
             if (((distances[y][x] - distances[ny][nx] < minDiff) && (distances[y][x] - distances[ny][nx] > 0)) && (isCellAccessible(x, y, nx, ny, verticalWalls, horizontalWalls)))
             {
-                // log(std::to_string(nx) + " " + std::to_string(ny) + "toVisit");
                 if (minDiff != 999){
                     toVisit.pop_back();
                 }
@@ -457,22 +426,6 @@ int main(int argc, char *argv[])
                 minDiff = distances[y][x] - distances[ny][nx];
             }
         }
-
-        for (const auto &cell : shortestPath)
-        {
-            int cx = cell.first;
-            int cy = cell.second;
-            log("shortestPath " + std::to_string(cx) + " " + std::to_string(cy));
-        }
-
-        for (const auto &cell : toVisit)
-        {
-            int cx = cell.first;
-            int cy = cell.second;
-            log("toVisit " + std::to_string(cx) + " " + std::to_string(cy));
-        }
-
-        log(".........................");
 
         std::pair<int, int> next = toVisit.back();
         int nx = next.first;
@@ -494,14 +447,8 @@ int main(int argc, char *argv[])
         shortestPath.push_back(next);
         toVisit.pop_back();
 
-        // log(std::to_string(nx) + " " + std::to_string(ny) + "next");
-
         API::setColor(nx, ny, 'b');
 
         mouseControl(x, y, nx, ny, facing);
-
-        // log(std::to_string(facing));
-
-        // log(std::to_string(facing) + " new");
     }
 }
